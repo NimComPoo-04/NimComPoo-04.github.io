@@ -10,6 +10,18 @@ p
 	font-size: 1.2em ;
 }
 
+a
+{
+	color: aqua ; 
+	text-decoration: none ;
+}
+
+a:hover
+{
+	color: orange; 
+	text-decoration: none ;
+}
+
 h1
 {
 	font-size: 2em ;
