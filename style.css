@@ -1,0 +1,34 @@
+@font-face{
+	font-family: Oswald ;
+	src :url('./assets/fonts/Oswald-VariableFont_wght.ttf');
+}
+
+body{
+	font-family: Oswald;
+	font-size: 24;
+	color: aliceblue ;
+	background-color: slateblue;
+	margin-left: 10% ;
+	margin-right: 10% ;
+}
+
+.Article-header{
+	color: aquamarine;
+	text-align: center;
+	font-size: 72;
+}
+
+.Sub-header{
+	color: chartreuse;
+	/*text-align: center;*/
+	font-size: 48;
+}
+
+a{
+	color:azure ;
+	text-decoration:none ;
+}
+
+a:hover{
+	color:lightsalmon ;
+}
