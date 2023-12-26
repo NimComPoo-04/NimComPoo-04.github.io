@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang='en'>
+	<head>
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<meta charset='utf-8'>
+		<title>Under Construction</title>
+		<script>
+function main()
+{
+	const a = document.getElementById('a');
+	const b = document.getElementById('b');
+	const c = document.getElementById('c');
+
+	setInterval(() => {
+		a.style.left = Math.floor((Math.random() * (screen.width - 200))) + "px";
+		a.style.top = Math.floor((Math.random() * (screen.height - 200))) + "px";
+
+		b.style.left = Math.floor((Math.random() * (screen.width - 400))) + "px";
+		b.style.top = Math.floor((Math.random() * (screen.height - 400))) + "px";
+
+		c.style.left = Math.floor((Math.random() * (screen.width - 600))) + "px";
+		c.style.top = Math.floor((Math.random() * (screen.height - 600))) + "px";
+	}, 800)
+
+	let url = new URL(window.location.href).searchParams.get('t')
+	console.log(url)
+	console.log(screen.width)
+	console.log(screen.height)
+	if(url != null)
+		setTimeout(() => {window.location.replace(url)}, 5000)
+}
+
+addEventListener('load', main)
+		</script>
+<style>
+
+div {
+	background: gray;
+	position: absolute;
+	color: white;
+	text-align: center;
+	border-radius: 50%;
+
+	top: 50%;
+	left: 50%;
+
+	transition: left 0.8s, top 0.8s;
+}
+
+div span {
+	position: relative;
+	top: 45%;
+	font-size: 2em;
+	display: block;
+}
+
+#a {
+	background: darkseagreen;
+	width: 100px;
+	height: 100px;
+}
+
+#a span { top: 32%; }
+
+#b {
+	background: goldenrod;
+	width: 200px;
+	height: 200px;
+}
+
+#b span { top: 42%; }
+
+#c {
+	background: rosybrown;
+	width: 300px;
+	height: 300px;
+}
+
+#c span { top: 45%; }
+
+</style>
+	</head>
+	<body>
+		<div id='c'><span>Construction</span></div>
+		<div id='b'><span>Under</span></div>
+		<div id='a'><span>Site</span></div>
+	</body>
+</html>
