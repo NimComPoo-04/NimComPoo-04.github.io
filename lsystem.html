@@ -1,0 +1,464 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name='viewport' value='width=device-width, initial-scale=1'>
+		<title>L-System</title>
+<style>
+body {
+	width: 70%;
+	margin: auto;
+	font-family: monospace;
+	font-size: 1.5em;
+}
+main {
+	text-align: center;
+	min-width: 640px;
+}
+.can-cont {
+	border: solid black 1px;
+	border-radius: 3px;
+	display: block;
+	width: 100%;
+	height: 600px; 
+	resize: vertical;
+	overflow: hidden;
+}
+
+.inputsec {
+	width: 100%;
+	display: flex;
+	height: 200px;
+}
+
+.inputsec textarea {
+	display: block;
+	width: 60%;
+	font-family: monospace;
+	resize: none;
+	overflow: auto;
+	outline: none;
+	padding: 10px;
+	margin: 0px;
+	font-size: 0.8em;
+
+	border: solid black 1px;
+	border-radius: 3px;
+	border-right: none;
+}
+.inputsec div {
+	border: solid;
+	border-width: 1px;
+	border-radius: 3px;
+	width: 40%;
+	margin: 0px;
+	text-align: left;
+	padding: 10px;
+	overflow: auto;
+	font-size: 0.8em;
+}
+
+.inputsec span {
+	display: block;
+}
+
+.action {
+	display: flex;
+	justify-content: center;
+}
+
+.action button {
+	font-size: 16pt;
+	width: 50%;
+	margin: 0px;
+	padding-block: 6px;
+	border: none;
+	border-radius: 3px;
+}
+
+#load {
+	background-color: yellow;
+}
+
+#load:active {
+	background-color: gold;
+	color:white;
+}
+
+#step {
+	background-color: lightgreen;
+}
+
+#step:active {
+	background-color: limegreen;
+	color: white;
+}
+
+#reset {
+	background-color: salmon;
+}
+
+#reset:active {
+	background-color: tomato;
+	color: white;
+}
+
+.color-ok {
+	color: green;
+}
+
+.color-warn {
+	color: gold;
+}
+
+.color-error {
+	color: red;
+}
+
+section {
+	padding: 10px;
+}
+</style>
+	</head>
+	<body>
+		<main>
+		<h1>L-System</h1>
+		<div class='can-cont'>
+			<canvas id='can'></canvas>
+		</div>
+		<div class='inputsec'>
+			<textarea id='prog' wrap='off'>;; The Dragon Curve Example
+F = F + G
+G = F - G
+Initial = F
+Rotation = 90
+DeltaRotation = 90
+Step = 5</textarea>
+			<div class='l-systemlog'>
+			</div>
+		</div>
+		<div class='action'>
+			<button id='load'> Load </button>
+			<button id='step'> Step </button>
+			<button id='reset'> Reset </button>
+		</div>
+		</main>
+<script>
+	const can = document.querySelector('#can');
+	const cont = document.querySelector('.can-cont');
+	const gfx = can.getContext('2d');
+	
+	const load = document.querySelector('#load');
+	const step = document.querySelector('#step');
+	const rset = document.querySelector('#reset');
+
+	const log = document.querySelector('.l-systemlog');
+
+	function resizeCanvas() {
+		const dim = cont.getClientRects()[0];
+		can.width = dim.width;
+		can.height = dim.height;
+		redraw()
+
+		logToConsole('Width = ' + can.width + ' Height = ' + can.height, 'ok')
+	}
+
+
+	let gen = 0;
+
+	let Initial = "";
+	let Rotation = 0;
+	let DeltaRotation = 90;
+	let Position = [500, 500];
+	let Step = 10;
+	let Rules = {};
+
+	const ReservedWords = [
+		'Initial',
+		'Rotation',
+		'DeltaRotation',
+		'Position',
+		'Step'
+	]
+
+	resizeCanvas();
+
+	let error = false;
+
+	function logToConsole(txt, which)
+	{
+		const k = document.createElement('span');
+		k.classList.add('color-'+which.trim());
+		k.textContent = txt;
+		log.appendChild(k);
+	}
+
+	window.addEventListener('resize', resizeCanvas);
+	new ResizeObserver(resizeCanvas).observe(cont);
+
+	load.addEventListener('click', (e) => {
+		reset()
+		if(!error)
+		{
+			logToConsole("Rules compiled", 'ok');
+			redraw();
+		}
+	})
+
+	step.addEventListener('click', (e) => {
+		if(!error)
+		{
+			gen++;
+			stepNext();
+			logToConsole("Drawing Generation : " + gen, 'ok');
+			redraw();
+		}
+	})
+
+	rset.addEventListener('click', (e) => {
+		reset();
+		redraw();
+	})
+
+
+	function redraw() {
+		gfx.fillStyle = 'brown';
+		gfx.fillRect(0, 0, can.width, can.height);
+
+		const commands = Initial.split('$') //.filter((e) => '+-[]'.indexOf(e) >= 0 )
+
+		console.log('Initial ', Initial)
+		console.log('Command ', commands)
+
+		let pos_x = Position[0];
+		let pos_y = Position[1];
+
+		let pos_stack = []
+
+		const step = Step
+
+		const rot = DeltaRotation * Math.PI / 180 
+
+		let netrot = Rotation * Math.PI / 180
+
+		gfx.beginPath();
+		gfx.strokeStyle = 'white';
+
+		commands.forEach((e) => {
+
+			const stepy = step * Math.sin(netrot)
+			const stepx = step * Math.cos(netrot)
+
+			const old_px = pos_x;
+			const old_py = pos_y;
+
+			switch(e)
+			{
+				case '+':
+					netrot += rot;
+					break;
+
+				case '-':
+					netrot -= rot;
+					break;
+
+				case '[':
+					pos_stack.push([pos_x, pos_y, netrot])
+					break;
+
+				case ']':
+					[pos_x, pos_y, netrot] = pos_stack.pop()
+					break;
+
+				default:
+					pos_x += stepx;
+					pos_y += stepy;
+
+					gfx.moveTo(old_px, old_py);
+					gfx.lineTo(pos_x, pos_y);
+			}
+		})
+
+		gfx.stroke();
+	}
+
+	function reset() {
+		while(log.firstChild)
+			log.removeChild(log.firstChild);
+
+		gen = 0;
+
+		Initial = "";
+		Rotation = 0;
+		Position = [can.width/2, can.height/2];
+		DeltaRotation = 90;
+		Rules = {}
+
+		parse();
+	}
+
+	reset();
+	redraw();
+
+	/* ---- Parser Code --- */
+
+	function parse() {
+		const prog = document.querySelector('#prog');
+
+		// Removing comments from source code
+		const src = (prog.value + "\n").replace(/;;.*\n/, '\n');
+
+		// splitting source code into multiple lines
+		let lines = src.split(/\n+/);
+
+		// All lines are of the form Identifier '=' Expression 
+		// valid tokens are + - Identifiers = [ ]
+	
+		let lineno = 0;
+		error = false;
+
+		lines.forEach((e) => {
+
+			if(e != null && e.length == 0 && !error) return;
+
+			const tokens = [...e.match(/\-|=|\+|\[|\]|\w+/g)]
+
+			console.log(tokens)
+
+			const i = tokens.indexOf('=')
+
+			if(i < 0)
+			{
+				logToConsole(lineno + ": Missing = ", 'error');
+				error = true;
+				return;
+			}
+			else if(i < 1)
+			{
+				logToConsole(lineno + ": Missing Identifier ", 'error');
+				error = true;
+				return;
+			}
+			else if(i > 1)
+			{
+				logToConsole(lineno + ": Identifier Expected", 'error');
+				error = true;
+				return;
+			}
+
+			if(tokens.length < 3)
+			{
+				logToConsole(lineno + ": Expression Missing", 'error');
+				error = true;
+				return;
+			}
+
+			if(tokens[0].split('').find((e) => e.toLowerCase() == e.toUpperCase())) {
+				logToConsole(lineno + ": Malformed Identifier", 'error');
+				error = true;
+				return;
+			}
+
+			let current = tokens[0];
+
+			for(let t = 2; t < tokens.length; t++)
+				switch(tokens[t]) {
+					case '+':
+					case '-':
+					case '[':
+					case ']':
+						break;
+
+					default:
+						if(!isNaN(parseFloat(tokens[t])));	// brain not working sorry 
+						else if(tokens[t].split('').find((e) => e.toLowerCase() == e.toUpperCase())) {
+							logToConsole(lineno + ": Malformed Identifier or Number", 'error');
+							error = true;
+							return;
+						}
+						break;
+				}
+
+			switch(tokens[0])
+			{
+				case 'Initial':
+					Initial = tokens.splice(2).join('$');
+					break;
+
+				case 'Position':
+					if(tokens.length < 4 || isNaN(parseFloat(tokens[2])) || isNaN(parseFloat(tokens[3])))
+					{
+						logToConsole(lineno + ": Position Error ", 'error');
+						error = true;
+						return;
+					}
+
+					Position = [parseFloat(tokens[2]), parseFloat(tokens[3])]
+					break;
+
+				case 'Rotation':
+					if(tokens.length < 3 || isNaN(parseFloat(tokens[2])))
+					{
+						logToConsole(lineno + ": Rotation Error ", 'error');
+						error = true;
+						return;
+					}
+
+					Rotation = parseFloat(tokens[2])
+					break;
+
+				case 'DeltaRotation':
+					if(tokens.length < 3 || isNaN(parseFloat(tokens[2])))
+					{
+						logToConsole(lineno + ": DeltaRotation Error ", 'error');
+						error = true;
+						return;
+					}
+
+					DeltaRotation = parseFloat(tokens[2])
+					break;
+
+				case 'Step':
+					if(tokens.length < 3 || isNaN(parseFloat(tokens[2])))
+					{
+						logToConsole(lineno + ": Step Error ", 'error');
+						error = true;
+						return;
+					}
+
+					Step = parseFloat(tokens[2])
+					break;
+
+
+				default:
+					Rules[tokens[0]] = tokens.splice(2).join('$');
+			}
+
+			lineno++;
+		})
+	}
+
+	function stepNext() {
+		if(Initial == "")
+			logToConsole("Initial is empty", 'warn');
+		if(Step == 0)
+			logToConsole("Step size is zero", 'warn');
+
+		Initial = Initial.split('$').map((e) => {
+			switch(e) {
+				case '+':
+				case '-':
+				case '[':
+				case ']':
+					return e;
+				default:
+					if(Rules[e] == undefined)
+						return e;
+					else
+						return Rules[e];
+			}
+		}).join('$')
+	}
+
+</script>
+	</body>
+</html>
