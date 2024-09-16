@@ -331,11 +331,9 @@ Step = 5</textarea>
 			if(e != null && e.length == 0 && !error) return;
 
 			const matches = e.match(/\-|=|\+|\[|\]|\w+/g);
-			if(matches)
-				const tokens = [...matches];
-			else
-				return;
-
+			if(!matches) return;
+			const tokens = [...matches];
+			
 			console.log(tokens)
 
 			const i = tokens.indexOf('=')
