@@ -127,6 +127,16 @@ section {
 		</div>
 		<div class='inputsec'>
 			<textarea id='prog' wrap='off'>;; The Dragon Curve Example
+;; comments start with ;;
+;; + rotate move direction by DeltaRotation (in degrees)
+;; - rotate move direction by -DeltaRotation (in degrees)
+;; [ saves current location and orientation of pen
+;; ] restors last saved pen location and orientation
+;; 'A' can be any word moves the pen with Step size
+;; Initial variable must be assigned, is used for drawing
+;; Rotation is for initial rotation of pen
+;; Position = 0 0 can be used to set the start location of pen, (does not work as intended all the time)
+				
 F = F + G
 G = F - G
 Initial = F
