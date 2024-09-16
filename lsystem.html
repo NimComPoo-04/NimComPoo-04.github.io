@@ -315,7 +315,7 @@ Step = 5</textarea>
 		const prog = document.querySelector('#prog');
 
 		// Removing comments from source code
-		const src = (prog.value + "\n").replace(/;;.*\n/, '\n');
+		const src = (prog.value + "\n").replaceAll(/;;.*\n/, '\n');
 
 		// splitting source code into multiple lines
 		let lines = src.split(/\n+/);
