@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Marbelling</title>
+		<style>
+body {
+	margin: 0px;
+	padding: 0px;
+}
+
+canvas {
+	display: block;
+	z-index: -1;
+	position: absolute;
+	left:0px;
+	top:0px;
+}
+
+.options {
+	display: flex;
+	flex-direction: column;
+	margin: 10px;
+	background: rgba(255, 255, 255, 0.5);
+	padding: 10px;
+	width: fit-content;
+	border-radius: 10px;
+	font-size: 20pt;
+	min-width: 303px;
+}
+
+.options div {
+	display: flex;
+	padding-bottom: 10px;
+}
+
+.info {
+	color: white;
+}
+
+input[type='color'] {
+	height: inherit;
+	border: 0px;
+	padding: 0px;
+}
+
+button {
+	font-size: inherit;
+	border: 0px;
+	padding-block: 5px;
+	padding-left: 20px;
+	width: 100%;
+	text-align: left;
+}
+		</style>
+	</head>
+	<body>
+		<canvas id='canvas'></canvas>
+		<div class='options'>
+			<div class='info'>
+				Selected:&nbsp;<output id='selected'>Drop Color</output>
+			</div>
+			<div>
+				<button id='drop-type'>Drop Color</button>
+				<input id='drop-color' type='color' value='#ffffff' autocomplete=off>
+			</div>
+			<div>
+				<button id='circtine-type'>Circular Tine</button>
+			</div>
+			<div>
+				<button id='tineline-type'>Tineline</button>
+			</div>
+			<div>
+				<button id='vortex-type'>Vortex</button>
+			</div>
+			<div>
+				<button id='reset'>Reset</button>
+			</div>
+		</div>
+		<script src='marbelling.js'></script>
+	</body>
+</html>
