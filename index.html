@@ -1,185 +1,81 @@
 <!doctype html>
-<html lang=en>
+<html>
 	<head>
-		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
-		<meta charset='utf-8'>
-		<title>Blog Post</title>
-		<link rel='stylesheet' href='style.css'>
+		<title>Marbelling</title>
+		<style>
+body {
+	margin: 0px;
+	padding: 0px;
+}
+
+canvas {
+	display: block;
+	z-index: -1;
+	position: absolute;
+	left:0px;
+	top:0px;
+}
+
+.options {
+	display: flex;
+	flex-direction: column;
+	margin: 10px;
+	background: rgba(255, 255, 255, 0.5);
+	padding: 10px;
+	width: fit-content;
+	border-radius: 10px;
+	font-size: 20pt;
+	min-width: 303px;
+}
+
+.options div {
+	display: flex;
+	padding-bottom: 10px;
+}
+
+.info {
+	color: white;
+}
+
+input[type='color'] {
+	height: inherit;
+	border: 0px;
+	padding: 0px;
+}
+
+button {
+	font-size: inherit;
+	border: 0px;
+	padding-block: 5px;
+	padding-left: 20px;
+	width: 100%;
+	text-align: left;
+}
+		</style>
 	</head>
 	<body>
-		<header>
-			<h1>Adventures of NimComPoo</h1>
-			<nav>
-				<div><a href='/under_construction.html'>About</a></div>
-				<div><a href='https://nimcompoo.itch.io/'>Games</a></div>
-				<div><a href='/'>Blog</a></div>
-				<div><abbr title='Nope No Contacting Me'>Contact</abbr></div>
-				<div><a href='https://github.com/NimComPoo-04'>Github</a></div>
-			</nav>
-		</header>
-		<main>
-			<article>
-				<div class='blog-images'>
-					<img src='assets/images/mandelbrot/front-page.bmp'>
-				</div>
-				<div class='blog-item-header'>
-					<h2>Mandelbrot Fractals</h2>
-					<time datetime='2023-12-20'>20th, December 2023.</time>
-				</div>
-				<div class='blog-item-descr'>
-					<p>
-					Fractals are infinitely self repeating mathematical structures.
-					Mandelbrot Fractal is probably the most well known of all of them.
-					The self referencial structure makes them perfect candidate for computer generation.
-					</p>
-				</div>
-				<div class='blog-readmore'>
-					<a href = '/under_construction.html?t=https%3A%2F%2Fgist.github.com%2FNimComPoo-04%2F339281b0fa1eeaa006f2508b3b35cca1'>Read More</a>
-				</div>
-			</article>
-			<article>
-				<div class='blog-images'>
-					<img src='assets/images/julia.PNG'>
-				</div>
-				<div class='blog-item-header'>
-					<h2>Fractal Explorer</h2>
-					<time datetime='2023-05-20'>20th, May 2023.</time>
-				</div>
-				<div class='blog-item-descr'>
-					<p>
-					Two blogposts about fractals seems a bit odd but I can assure you its anything but.
-					This post talks about how a fractal explorer can be implemented in the graphics card
-					using opengl. Modern Graphics cards have immense power at their disposal. Even the ones
-					that are built into the CPU dies enable the user to create thousands of parallel computation
-					units.This project was built as the final project of CS50.
-					</p>
-				</div>
-				<div class='blog-readmore'>
-					<a href = '/under_construction.html?t=https%3A%2F%2Fyoutu.be%2FRai7Idyv--w%3Fsi%3DdUpSvBQpJ4ENEINr'>Read More</a>
-				</div>
-			</article>
-			<article>
-				<div class='blog-images'>
-					<img src='assets/images/bool_func.png'>
-				</div>
-				<div class='blog-item-header'>
-					<h2>Boolean Function Reducer</h2>
-					<time datetime='2023-12-22'>22nd, December 2023.</time>
-				</div>
-				<div class='blog-item-descr'>
-					<p>
-					Reducing Boolean Functions is a war not worth fighting, its almost always better to just
-					ship off the work to a machine designed to do the drudge work. This program does just that.
-					It works well enough for 10 variables and that i think is more than enough for most applications.
-					</p>
-				</div>
-				<div class='blog-readmore'>
-					<a href = '/under_construction.html?t=https%3A%2F%2Fgithub.com%2FNimComPoo-04%2FBoolReducer'>Read More</a>
-				</div>
-			</article>
-			<article>
-				<div class='blog-images'>
-					<img src='assets/images/tetris.png'>
-				</div>
-				<div class='blog-item-header'>
-					<h2>Block Game</h2>
-					<time datetime='2023-11-06'>6th, November 2023.</time>
-				</div>
-				<div class='blog-item-descr'>
-					<p>
-					Not unlike the next person I absolutely love playing the T-game.
-					I won't name the game since even naming it is inviting a lawsuit.
-					It was a ton of fun recreating this piece of gaming history, a blast from the past.
-					Although old its much more complicated that it would seem at first glance.
-					Bestpart the whole game is a single C file, which compiles both for window and linux
-					(should compile for mac aswell :).
-					</p>
-				</div>
-				<div class='blog-readmore'>
-					<a href = 'https://nimcompoo.itch.io/blok-game'>Read More</a>
-				</div>
-			</article>
-			<article>
-				<div class='blog-images'>
-					<img src='assets/images/chip8.png'>
-				</div>
-				<div class='blog-item-header'>
-					<h2>Chip-8 Emulator</h2>
-					<time datetime='2022-03-14'>14th, March 2022.</time>
-				</div>
-				<div class='blog-item-descr'>
-					<p>
-					Implementing real harware as software has a tremendous feeling to it that can not be described in
-					words. Although Chip-8 is not a real system it is a emulator running on hardware. It is probably 
-					the easiest game console to emulate. The picture is of the emulator running a game. I have no idea
-					why I chose those obnoxious colors for the monochrome display but its cool.
-					</p>
-				</div>
-				<div class='blog-readmore'>
-					<a href = 'https://nimcompoo.itch.io/chip8-emulator'>Read More</a>
-				</div>
-			</article>
-			<article>
-				<div class='blog-images'>
-					<img src='assets/images/thefuture.png'>
-				</div>
-				<div class='blog-item-header'>
-					<h2>Construct The Future</h2>
-					<time datetime='2021-09-05'>5th, September 2021.</time>
-				</div>
-				<div class='blog-item-descr'>
-					<p>
-					Construct The Future is not a game in the traditional sense of the term. It is a celullar automaton simulator. There
-					are several types of 'materials' available to play with. It can also be used to draw. This was my first
-					game for the OLC codejam.
-					</p>
-				</div>
-				<div class='blog-readmore'>
-					<a href = 'https://nimcompoo.itch.io/construct-the-future'>Read More</a>
-				</div>
-			</article>
-			<article>
-				<div class='blog-images'>
-				</div>
-				<div class='blog-item-header'>
-					<h2>HTTP Server</h2>
-					<time datetime='2022-04-28'>28nd, April 2022.</time>
-				</div>
-				<div class='blog-item-descr'>
-					<p>
-					Something things just interest me for no reason and this was one of those times.
-					This is not by any means a usable HTTP server, it does not handle all types of 
-					requests. It does not maintain an open connection and like the old times reconnects
-					each a request is made. But as a learning tool it was excellent.
-					</p>
-				</div>
-				<div class='blog-readmore'>
-					<a href = '/under_construction.html?t=https%3A%2F%2Fgithub.com%2FNimComPoo-04%2FGiggle'>Read More</a>
-				</div>
-			</article>
-			<article>
-				<div class='blog-images'>
-				</div>
-				<div class='blog-item-header'>
-					<h2>Smear Lang</h2>
-					<time datetime='2021-10-15'>15nd, October 2021.</time>
-				</div>
-				<div class='blog-item-descr'>
-					<p>
-					Smear Lang is a experimental programming language like lisp. It just transpiles
-					to lua from a weird lisp like syntax. A Year back I found out about the MAL project,
-					it was amazing. But I was too scared (i have no idea why!) to fork the MAL repo and build
-					a LISP so I decided that i would just make my own version. It is very scuffed and does
-					not even have proper error handling. Not my proudest projects.
-					</p>
-				</div>
-				<div class='blog-readmore'>
-					<a href = '/under_construction.html?t=https%3A%2F%2Fgithub.com%2FNimComPoo-04%2Fsmear'>Read More</a>
-				</div>
-			</article>
-		</main>
-		<footer>
-			<p>Hope You Had a blessed day person!</p>
-		</footer>
+		<canvas id='canvas'></canvas>
+		<div class='options'>
+			<div class='info'>
+				Selected:&nbsp;<output id='selected'>Drop Color</output>
+			</div>
+			<div>
+				<button id='drop-type'>Drop Color</button>
+				<input id='drop-color' type='color' value='#ffffff' autocomplete=off>
+			</div>
+			<div>
+				<button id='circtine-type'>Circular Tine</button>
+			</div>
+			<div>
+				<button id='tineline-type'>Tineline</button>
+			</div>
+			<div>
+				<button id='vortex-type'>Vortex</button>
+			</div>
+			<div>
+				<button id='reset'>Reset</button>
+			</div>
+		</div>
+		<script src='marbelling.js'></script>
 	</body>
 </html>
