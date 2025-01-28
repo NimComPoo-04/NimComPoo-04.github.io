@@ -12,11 +12,20 @@ canvas {
 	display: block;
 	width: 100%;
 }
+img {
+	display: none;
+}
+div {
+	display: none;
+}
 		</style>
 	</head>
 	<body>
+		<img src='something.jpg'>
 		<video autoplay playsinline></video>
-		<script src='main.js'></script>
 		<canvas></canvas>
+		<div><input id='thing' type='number' value='0'></div>
+		<div><input id='color' type='color'></div>
+		<script src='main.js'></script>
 	</body>
 </html>
