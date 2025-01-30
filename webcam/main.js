@@ -16,9 +16,9 @@ function printObject(str) {
 }
 
 const vs = `#version 300 es
-precision mediump float;
+precision highp float;
 
-in vec4 aPos;
+layout(location = 0) in vec4 aPos;
 
 out vec2 fragCoord;
 out vec2 uv;
@@ -27,7 +27,7 @@ uniform vec2 resolution;
 
 void main () {
 
-	uv.x = (1.0 - aPos.x) * 0.5;
+	uv.x = (aPos.x + 1.0) * 0.5;
 	uv.y = (1.0 - aPos.y) * 0.5;
 
 	fragCoord = uv * resolution;
@@ -37,7 +37,7 @@ void main () {
 `;
 
 const fs_common = `#version 300 es
-		precision mediump float;
+		precision highp float;
 
 		in vec2 fragCoord;
 		in vec2 uv;
@@ -46,13 +46,23 @@ const fs_common = `#version 300 es
 		uniform vec2 resolution;
 		uniform sampler2D img;
 		uniform vec4 color;
+		uniform float time;
+
+		vec3 hsv2rgb(vec3 c)
+		{
+			vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+			vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+			return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+		}
+
 		`;
 
 function GetUnifrom(gl, program) {
 	return {
 		resolution : gl.getUniformLocation(program, 'resolution'),
 		img : gl.getUniformLocation(program, 'img'),
-		color: gl.getUniformLocation(program, 'color')
+		color: gl.getUniformLocation(program, 'color'),
+		time: gl.getUniformLocation(program, 'time')
 	};
 }
 
@@ -65,8 +75,22 @@ const fss = {
 	`,
 	tint: `${fs_common}
 
+	vec3 f() {
+
+		float t = 0.;
+
+		t += sin(time * 0.001 + uv.x * 5.);
+		t += sin(time * 0.001 + uv.y * 7.);
+		t += sin(time * 0.001 + (uv.y + uv.x) * 9.);
+		t += sin(time * 0.001 + length(uv) * 15.);
+
+		t /= 4.;
+
+		return hsv2rgb(vec3((t + 1.0) * 0.5, 1.0, 1));
+	}
+
 	void main() {
-		fragColor = texture(img, uv) * color;
+		fragColor = texture(img, uv) * vec4(f(), 1.0);
 	}
 	`,
 	werid: `${fs_common}
@@ -78,6 +102,111 @@ const fss = {
 		fragColor.b = floor(fragColor.b * 5.0)/5.0;
 	}
 	`,
+	ordered_dither: `${fs_common}
+
+	float M[16] = float[16](
+		 0.0,  8.0,  2.0, 10.0,
+		12.0,  4.0, 14.0,  6.0,
+		 3.0, 11.0,  1.0,  9.0,
+		15.0,  7.0, 13.0,  5.0
+	);
+
+	void main() {
+		fragColor = texture(img, uv);
+
+		int j = int(mod(fragCoord.x/2.0, 4.0));
+		int i = int(mod(fragCoord.y/2.0, 4.0));
+
+		float ns = (M[i * 4 + j] / 16.0 - 0.5);
+		float s  = 1./16.;
+
+		fragColor.r = floor((fragColor.r + s * ns) * 7.0 - 0.5) / 7.0;
+		fragColor.g = floor((fragColor.g + s * ns) * 7.0 - 0.5) / 7.0;
+		fragColor.b = floor((fragColor.b + s * ns) * 7.0 - 0.5) / 7.0;
+	}
+	`,
+	box_blur: `${fs_common}
+
+	void main() {
+		fragColor = vec4(0, 0, 0, 1);
+
+		vec2 siz = vec2(3.0 / resolution.x, 3.0 / resolution.y);
+		vec2 dsiz = vec2(1.0 / resolution.x, 1.0 / resolution.y);
+
+		float count = 0.0;
+
+		for(float i = -siz.y; i <= siz.y; i += dsiz.y)
+		{
+			for(float j = -siz.x; j <= siz.x; j += dsiz.x)
+			{
+				fragColor = fragColor + texture(img, uv + vec2(j, i)); 
+				count = count + 1.0;
+			}
+		}
+
+		fragColor /= count;
+	}
+	`,
+	edge_detect: `${fs_common}
+
+	mat3 kernel = mat3(
+		-2, -2, 2,
+		-2, 0, 2,
+		-2, 2, 2
+	);
+
+	// Get the correct position
+	vec2 get_pos(int indx) {
+		return vec2[9](
+			vec2(-1, -1), vec2(0, -1), vec2(1, -1),
+			vec2(-1,  0), vec2(0,  0), vec2(1,  0),
+			vec2(-1,  1), vec2(0,  1), vec2(1,  1)
+		)[indx] / resolution;
+	}
+
+	mat3[3] get_space() {
+		vec4 region[9];
+
+		for(int i = 0; i < 9; i++)
+			region[i] = texture(img, uv + get_pos(i));
+
+		mat3 mregs[3];
+
+		for(int i = 0; i < 3; i++)
+			mregs[i] = mat3(
+				region[0][i], region[1][i], region[2][i],
+				region[3][i], region[4][i], region[5][i],
+				region[6][i], region[7][i], region[8][i]
+			);
+
+		return mregs;
+	}
+
+	vec4 edge_detect()
+	{
+		vec4 fragment = vec4(0., 0., 0., 1.0);
+
+		mat3 region[3] = get_space();
+
+		for(int i = 0; i < 3; i++)
+		{
+			mat3 rc = region[i];
+			mat3 c = matrixCompMult(kernel, rc);
+
+			float r = c[0][0] + c[0][1] + c[0][2]+
+				  c[1][0] + c[1][1] + c[1][2]+
+				  c[2][0] + c[2][1] + c[2][2];
+
+			fragment[i] = r;
+		}
+
+		return fragment;
+	}
+
+	void main() {
+		fragColor = edge_detect();
+	}
+	`,
 	error: `${fs_common}
 
 	void main() {
@@ -87,8 +216,6 @@ const fss = {
 };
 
 function LoadShader(gl) {
-
-	let programs = []
 
 	const vsid = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vsid, vs);
@@ -151,9 +278,9 @@ function GenPlanes(gl, program) {
 	gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
 	gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
 
-	const aPos = gl.getAttribLocation(program, 'aPos');
-	gl.enableVertexAttribArray(aPos);
-	gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+	//const aPos = gl.getAttribLocation(program, 'aPos');
+	gl.enableVertexAttribArray(0);
+	gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 
 	return [vao, vbo]
 }
@@ -181,7 +308,7 @@ function SetupVideo() {
 	if(str == undefined)
 		return undefined
 
-	return str.getUserMedia({video: true}).then((vidSrc) => {
+	return str.getUserMedia({video: { facingMode: {exact: 'environment'}}}).then((vidSrc) => {
 		const video = document.querySelector('video')
 		video.srcObject = vidSrc
 
@@ -197,24 +324,38 @@ function SetupVideo() {
 	}).catch((err) => Main(document.querySelector('canvas'), undefined));
 }
 
+let programs = []
+let program = 0
+let current_shader = 0;
+let gl = 0;
+let uniforms = {};
+
+function NextShader()
+{
+	current_shader++;
+	current_shader %= programs.length - 1;
+
+	program = programs[current_shader];
+
+	uniforms = GetUnifrom(gl, programs[current_shader]);
+}
+
 function Main(canvas, video) {
 	const img = document.querySelector('img');
 
-	const gl = canvas.getContext('webgl2');
+	gl = canvas.getContext('webgl2');
 
 	gl.viewport(0, 0, canvas.width, canvas.height)
 
 	canvas.addEventListener('resize', () => gl.viewport(0, 0, canvas.width, canvas.height));
 	
 
-	const program = LoadShader(gl)[2];
+	programs = LoadShader(gl);
+	program = programs[current_shader];
+
 	const [vao, vbo] = GenPlanes(gl, program);
 
-	const uniforms = GetUnifrom(gl, program);
-
-	gl.useProgram(program);
-	gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
-	gl.uniform1i(uniforms.img, 0);
+	uniforms = GetUnifrom(gl, program);
 
 	let tex;
 
@@ -223,7 +364,13 @@ function Main(canvas, video) {
 	else
 		tex = SetupTexture(gl, img);
 
-	function GameLoop() {
+	function GameLoop(time) {
+
+		gl.useProgram(program);
+		gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
+		gl.uniform1i(uniforms.img, 0);
+
+		gl.uniform1f(uniforms.time, time);
 
 		gl.clearColor(0.8, 0.0, 1.0, 1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT);
