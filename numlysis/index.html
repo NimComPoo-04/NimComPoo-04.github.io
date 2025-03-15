@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Funcs</title>
+		<style>
+body {
+	margin: 0px;
+}
+.page-wrapper {
+	display: flex;
+	height: 100vh;
+	flex-direction: row;
+	font-family: monospace;
+}
+
+.functions {
+	padding-inline: 3px;
+	border: solid 1px;
+	width: 30%;
+}
+
+.functions textarea {
+	width: 100%;
+	height: 100%;
+	padding: 0px;
+	margin: 0px;
+	resize: none;
+	border: none;
+	overflow: scroll;
+	font-size: 1.5em;
+}
+
+.output {
+	display: flex;
+	flex-direction: column;
+	font-size: 1.5em;
+	width: 70%;
+}
+
+.logging {
+	height: 30vh;
+	overflow: scroll;
+	padding: 3px;
+	border: solid 1px;
+	border-left: none;
+	white-space: pre-wrap;
+	margin: 0px;
+}
+		</style>
+	</head>
+	<body>
+		<div class='page-wrapper'>
+			<div class='functions'>
+				<textarea>// For now we are keeping javascript syntax.
+// Only supports 2d for now.
+				</textarea>
+			</div>
+			<div class='output'>
+				<canvas id='canvas'></canvas>
+				<div class='logging'></div>
+			</div>
+		</div>
+		<script src='main.js'></script>
+	</body>
+</html>
