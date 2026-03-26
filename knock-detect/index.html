@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Knock Detector</title>
+        <style>
+body {
+    margin: 0px;
+    font-size: 2em;
+}
+button {
+	font-size: 1.2em;
+}
+canvas {
+    display: block;
+}
+        </style>
+    </head>
+    <body>
+        <canvas id=canv></canvas>
+	<br>
+
+	<div style='text-align:center'>
+		<button id=start>Resume</button>
+		<button id=stop>Pause</button><br>
+	</div>
+
+	<div>Threshold: <input id=threshold type=range value=7.5 min=5 max=50 step=0.01></div>
+	<div>Smoother: <input id=smoother type=range value=2 min=0 max=10 step=1></div>
+
+	<div><br>Count: <span id='count'></span></div>
+        <script src='source.js'></script>
+    </body>
+</html>
