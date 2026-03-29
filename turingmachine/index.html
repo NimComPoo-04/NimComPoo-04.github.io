@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang=en>
+    <head>
+        <title>Turing Machine</title>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/viz.js@2.1.2/viz.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/viz.js@2.1.2/full.render.js"></script>
+
+        <style>
+
+ellipse {
+    fill: rgba(255, 255, 255, 0.2);
+}
+
+.node.current ellipse {
+    fill: rgba(255, 255, 0, 0.2);
+}
+
+.node.next ellipse {
+    fill: rgba(255, 0, 255, 0.2);
+}
+
+.node.current.final ellipse:nth-of-type(2) {
+    fill: rgba(255, 255, 0, 0.2);
+}
+
+.node.next.final ellipse:nth-of-type(2) {
+    fill: rgba(255, 0, 255, 0.2);
+}
+
+.node.halt ellipse {
+    fill: rgba(255, 0, 0, 0.2);
+}
+
+.node.halt.final ellipse {
+    fill: rgba(0, 255, 0, 0.2);
+}
+
+.edge path, .edge polygon {
+    stroke: black;
+}
+.edge polygon {
+    fill: black;
+}
+
+.edge.next path, .edge.next polygon {
+    stroke: rgba(0, 0, 255);
+}
+.edge.next polygon, .edge.next text {
+    fill: rgba(0, 0, 255);
+}
+
+.node ellipse, .edge path, .edge polygon {
+    transition: fill 0.3s ease-in-out;
+}
+
+textarea {
+    width: 300px;        /* default width */
+    min-width: 150px;    /* cannot shrink below 150px */
+    max-width: 500px;    /* cannot grow beyond 500px */
+    height: 300px;       /* optional height */
+    padding: 8px;
+    font-size: 16px;
+    resize: horizontal;  /* allow horizontal resizing only */
+  }
+button {
+    font-size: 24px;          /* large text */
+    padding: 20px 40px;       /* big clickable area */
+    border-radius: 10px;      /* rounded corners */
+    border: 2px solid #333;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+
+  button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);   /* slight hover pop */
+  }
+
+  button:active {
+    transform: scale(0.98);   /* press effect */
+  }
+  table {
+  table-layout: fixed;
+  width: 90%;
+  margin: 10px auto;
+  border-collapse: collapse;
+  border-top: 1px solid #999999;
+  border-bottom: 1px solid #999999;
+}
+
+th,
+td {
+  vertical-align: top;
+  padding: 0.6em;
+  text-align: center;
+}
+
+tr.initial {
+    background: rgba(255, 255, 0, 0.1) !important;
+}
+
+tr.final {
+    background: rgba(0, 0, 255, 0.1);
+}
+
+tfoot tr :nth-child(1) {
+  text-align: right;
+}
+
+tfoot tr :nth-child(2) {
+  text-align: left;
+}
+
+tfoot {
+  border-top: 1px solid #999999;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #eeeeee;
+}
+
+caption {
+  padding: 1em;
+  font-style: italic;
+  caption-side: bottom;
+  letter-spacing: 1px;
+}
+
+.tape-head {
+    background: yellow;
+}
+        </style>
+    </head>
+    <body>
+        <textarea id="source"></textarea>
+        <hr>
+        <div id="source-output"></div>
+        <hr>
+        <div id="transition-table"></div>
+        <hr>
+        <div id="transition-diagram"></div>
+        <hr>
+        <div id="turing-tape"></div>
+        <hr>
+        <div>
+            <textarea id=input></textarea>
+            <button id="submit">Submit</button>
+        </div>
+        <div>
+            <button id="step">Step</button>
+        </div>
+        <script src="compiler.js"></script>
+    </body>
+</html>
