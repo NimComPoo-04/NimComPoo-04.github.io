@@ -1,0 +1,229 @@
+body {
+    margin: 0px;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+main {
+    height: 96vh;
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+}
+
+.editing {
+    box-sizing: border-box;
+    height: 100%;
+    border-right: 3px solid black;
+    border-left: 3px solid cornsilk;
+    border-top: 3px solid cornsilk;
+    border-bottom: 3px solid cornsilk;
+    background: red;
+    font-size: 1.5em;
+}
+
+/*********************** OUTPUTS *********************/
+.output {
+    height: 60%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid darkred;
+    box-sizing: border-box;
+}
+.output article,
+.tape article {
+    display: none;
+    flex-grow: 100;
+}
+
+.transition-diagram svg {
+    max-width: 100%;
+    height: 100%;
+    width: auto;
+    display: block;
+}
+
+.output .show,
+.tape .show {
+    display: block;
+}
+.output nav,
+.tape nav{
+    display: flex;
+    flex-direction: row-reverse;
+    background: lightgray;
+
+    font-family: monospace;
+    font-size: 1.4em;
+}
+.output nav div,
+.tape nav div{
+    padding-inline: 10px;
+    padding-block: 5px;
+    background: lavender;
+    color: darkred;
+    margin-right: 3px;
+    font-weight: bold;
+}
+.output nav div.show,
+.tape nav div.show {
+    background: white;
+    color: black;
+}
+.output nav div:hover,
+.tape nav div:hover {
+    background: teal;
+    color: black;
+}
+/*************************************************/
+
+.tape {
+    height: 40%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.turingmachine-input textarea {
+    width: 100%;
+    height: 100%;
+    resize: none;
+    box-sizing: border-box;
+    font-size: 1.8em;
+}
+
+header, footer {
+    height: 2vh;
+    background: black;
+    color: white;
+    font-family: monospace;
+}
+
+/************************* TABLE *********************************/
+table {
+    table-layout: fixed;
+    width: 90%;
+    margin: 10px auto;
+    border-collapse: collapse;
+    border-top: 1px solid #999999;
+    border-bottom: 1px solid #999999;
+    background: white;
+}
+
+th,
+td {
+    vertical-align: top;
+    padding: 0.6em;
+    text-align: center;
+}
+
+tr.initial {
+    background: gold !important;
+}
+
+tr.final {
+    background: yellowgreen;
+}
+
+tfoot tr :nth-child(1) {
+    text-align: right;
+}
+
+tfoot tr :nth-child(2) {
+    text-align: left;
+}
+
+tfoot {
+    border-top: 1px solid #999999;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #eeeeee;
+}
+
+caption {
+    padding: 1em;
+    font-style: italic;
+    letter-spacing: 1px;
+    background: white;
+}
+
+.tape-head {
+    background: yellow;
+}
+/****************************************************************/
+
+/********************* Transition Diagram Coloring *************************/ 
+
+g.node.current ellipse {
+    fill: rgba(255, 255, 0, 0.2);
+}
+
+g.node.next ellipse {
+    fill: rgba(0, 255, 255, 0.1);
+}
+
+/* if we hit a nonfinal set it to black */
+g.node.current.halt ellipse {
+    fill: rgba(255, 0, 0, 0.2);
+}
+g.node.final.current.halt ellipse {
+    fill: rgba(0, 255, 0, 0.2);
+}
+
+g.edge.next path {
+    stroke: teal;
+}
+
+g.edge.next text {
+    fill: teal;
+}
+
+g.edge.next polygon {
+    stroke: teal;
+    fill: teal;
+}
+
+/***************************************************************************/
+
+.turingmachine-tape.show  {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#turingmachine-step {
+    font-size: 1.8em;
+    padding-inline: 3em;
+}
+
+article {
+    overflow: scroll;
+}
+
+.long-tape {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    font-size: 2em;
+    font-family: monospace;
+    width: 120%;
+    transform: translateX(-10%);
+}
+
+.long-tape div {
+    position: relative;
+}
+
+.long-tape .overlay-address {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    font-size: 0.7em;
+}
+.long-tape div {
+    border: 1px solid;
+    flex-grow: 1;
+    text-align: center;
+    padding-block: 1.1em;
+}
