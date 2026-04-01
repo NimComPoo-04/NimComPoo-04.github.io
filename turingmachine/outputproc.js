@@ -134,7 +134,7 @@ async function createTransitionDiagram(node) {
                 const j = turing_machine.transitions[v][k]
                 if(j)
                 {
-                    const ge = (j.difference ? j.direction[0] : 'ε')
+                    const ge = (j.direction ? j.direction[0] : 'ε')
                     edges += `${v} -> ${j.next_state} [label="(${k || 'ε'}, ${j.new_character || 'ε'}, ${ge})", id="L${v}U${k || 'ε'}R${j.next_state}"]`
                 }
             }
