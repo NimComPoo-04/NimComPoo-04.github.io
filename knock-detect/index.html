@@ -1,33 +1,109 @@
 <!doctype html>
 <html>
     <head>
-        <title>Knock Detector</title>
+        <title>Knock Detection</title>
+        <meta name=viewport content="width=device-width, initial-scale=1.0"/>
+        <link rel=stylesheet href="pico.min.css">
+        <link rel=stylesheet href="pico.colors.min.css">
         <style>
-body {
-    margin: 0px;
-    font-size: 2em;
+.hitcounter {
+    text-align: right;
+    padding-right: 10px;
+    display: inline-block;
+    font-size: 1.8em;
 }
-button {
-	font-size: 1.2em;
+.hitcounter::before {
+    content: 'Hit Counter: '
 }
-canvas {
-    display: block;
+
+.ossiloscope {
+    display: grid;
+}
+.ossiloscope > * {
+    grid-area: 1/1;
+}
+.ossiloscope .leads {
+    width: fit-content;
+    padding: 10px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(3px);
+    border-radius: 1.2em;
+}
+
+.ossiloscope .entries {
+    font-size: 0.8em;
+    padding-top: 0.5em;
+    text-align: left;
+}
+.ossiloscope .probe {
+    border-radius:100%;
+    width: 0.5em;
+    height: 0.5em;
+    display: inline-block;
 }
         </style>
     </head>
     <body>
-        <canvas id=canv></canvas>
-	<br>
+        <main class=container>
+            <section>
+                <header class=grid>
+                    <h1>Knock Detector v2.0</h1>
+                    <span class='hitcounter'>0</span>
+                </header>
+                <article class="ossiloscope">
+                    <div style='overflow:hidden;'> <canvas id=canv width=800 height=400></canvas> </div>
+                    <div>
+                        <div class="leads">
+                            <div> Legends </div>
+                            <div class="entries"> </div>
+                        </div>
+                    </div>
+                </article>
 
-	<div style='text-align:center'>
-		<button id=start>Resume</button>
-		<button id=stop>Pause</button><br>
-	</div>
+                <article class="grid">
+                    <button class="pico-background-lime-300" id=start>Start</button>
+                    <button class="pico-background-pink-300" id=stop>Stop</button>
+                </article>
 
-	<div>Threshold: <input id=threshold type=range value=7.5 min=5 max=50 step=0.01></div>
-	<div>Smoother: <input id=smoother type=range value=2 min=0 max=10 step=1></div>
+                <article>
+                    <h2>Bandpass Filter</h2>
+                    <div class="grid">
+                        <label>
+                            Minimum
+                            <input type="range" id="min-bandpass" min=0 max=1000 step=1 value=100>
+                        </label>
+                        <label>
+                            Maximum
+                            <input type="range" id="max-bandpass" min=2000 max=5000 step=1 value=3000>
+                        </label>
+                    </div>
+                </article>
+                <article>
+                    <h2>Treshold Parameters</h2>
+                    <div class="grid">
+                        <label>
+                            Threshold Scale Factor 
+                            <input type="range" id="thresholdScaleFactor" min=0 max=50 step=0.01 value=2.5>
+                        </label>
+                        <label>
+                            Minimum Threshold
+                            <input type="range" id="minThreshold" min=0 max=1 step=0.01 value=0.1>
+                        </label>
+                        <label>
+                            ZCR Limit
+                            <input type="range" id="zeroCrossingRateLimit" min=0 max=1 step=0.01 value=0.01>
+                        </label>
+                        <label>
+                            Crest Factor Scaler
+                            <input type="range" id="crestFactorScaler" min=0 max=1 step=0.01 value=0.15>
+                        </label>
+                    </div>
+                </article>
+            </section>
+        </main>
 
-	<div><br>Count: <span id='count'></span></div>
-        <script src='source.js'></script>
+        <script src="main.js"></script>
     </body>
 </html>
+
