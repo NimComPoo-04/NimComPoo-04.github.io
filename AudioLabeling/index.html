@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Specifier Utility</title>
+
+        <!-- script src='tf.min.js'></script -->
+        <script src='wavesurfer.min.js'></script>
+        <script src='regions.min.js'></script>
+        <script src='hover.min.js'></script>
+        <script src='timeline.min.js'></script>
+
+        <script src='script.js'></script>
+
+        <style>
+body {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    background: midnightblue;
+    height: 100vh;
+    border: 5px solid transparent;
+}
+
+.paused {
+    border: 5px solid red;
+}
+
+.thing {
+    padding: 10px;
+}
+
+.fahh {
+    display: flex;
+}
+.fahh .one {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    font-size: 1.2em;
+    height: fit-content;
+}
+.fahh .one button {
+    font-size: 1.1em;
+    background: transparent;
+    padding: 10px;
+}
+.fahh .one div {
+    padding-block: 1.1em;
+    padding-left: 1em;
+    border-bottom: orange solid 1px;
+}
+.fahh .two {
+    flex-grow: 10;
+    padding-inline: 30px;
+    height: 45vh;
+    overflow: scroll;
+}
+
+.fahh .two table {
+    width: 100%;
+}
+
+.fahh .two table thead {
+    position: sticky;
+    top:0px;
+    background: burlywood;
+}
+
+.fahh .two td,th {
+    border: 1px solid black;
+    padding: 10px;
+    font-size: 1.2em;
+}
+.fahh .two td input {
+    width: 100%;
+    margin: 0px;
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: 1.1em;
+}
+.vehicle-type {
+    padding: 0px;
+}
+        </style>
+    </head>
+    <body>
+        <div class='thing'>
+            <div id='waveform'></div>
+        </div>
+        <div class='fahh'>
+            <div class='one'>
+                <div>Zoom Level: <input id='zoomington' autocomplete=off type=range value=1 min=1 max=1000></div>
+                <div>Upload File <input id='filington' autocomplete=off type=file></div>
+                <div>Press <strong>Space</strong> to Pause / Play the Audio</div>
+                <div>Press <strong>Enter</strong> to Record the Horn</div>
+                <div><button id='download-shit'>Press to Download Records</button></div>
+            </div>
+            <div class='two'>
+                <table id='time-sheet' cellspacing=0>
+                    <thead>
+                        <tr>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Vehicle Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
