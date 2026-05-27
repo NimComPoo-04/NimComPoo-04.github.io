@@ -79,6 +79,9 @@ function main() {
 
     document.body.addEventListener('keydown', (e) => {
 
+        if(e.target.id != 'shouldi')
+            return;
+
         const timesheet = document.querySelector('#time-sheet tbody')
         const container = document.querySelector('.two')
 
