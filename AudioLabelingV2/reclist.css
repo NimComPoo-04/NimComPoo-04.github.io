@@ -1,0 +1,66 @@
+.recorder-data .nothing {
+    text-align: center;
+    display: flex;
+    height: 60vh;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+    color: var(--text-dim)
+}
+
+.recorder-data {
+
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+
+    overflow: scroll;
+
+    .entry {
+        display: flex;
+        background: var(--surface);
+        padding: 0.7em;
+        align-items: center;
+        border-block: 0.3em solid var(--primary);
+
+        .icon {
+            height: 10vh;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: pink;
+            color: purple;
+
+            background: pink;
+            color: purple;
+
+            margin: 10px;
+            border-radius: 10%;
+            font-size: 1.5em;
+            font-size: 6em;
+        }
+        .icon:active {
+            color: maroon;
+            background: red;
+        }
+
+        .body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            margin-block: 1vh;
+            margin-inline: 2vh;
+            flex-grow: 1;
+            font-size: 4em;
+        }
+
+        .body audio {
+            width: 100%;
+            padding: 0px;
+            border: none;
+            background: var(--primary);
+        }
+    }
+}

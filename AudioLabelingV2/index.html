@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" value="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+
+        <title>Audio Analyser</title>
+
+        <link rel="manifest" href="audio_analysis_pwa.webmanifest">
+
+        <link rel="stylesheet" href="common.css">
+        <link rel="stylesheet" href="recorder.css">
+        <link rel="stylesheet" href="reclist.css">
+        <link rel="stylesheet" href="analyser.css">
+
+        <link rel="stylesheet" href="assets/fontawesome-free-7.2.0-web/css/all.min.css">
+
+        <script src="main.js"></script>
+        <script src="assets/tensorflow.js"></script>
+    </head>
+    <body>
+
+        <header>
+            Audio Analyser
+        </header>
+
+        <main>
+            <section class="waveform-display">
+                <div class="waveform">
+                    <canvas></canvas>
+                </div>
+                <div class="duration">00:00:00</div>
+            </section>
+
+            <section class="recorder-data nodisplay">
+                <div class="nothing">Nothing to analyse yet</div>
+            </section>
+
+            <section class="analyser nodisplay">
+                <section class="analyser-display">
+                    <canvas></canvas>
+                </section>
+                <section class="analyser-list">
+                    <div class="entry">
+                        <div class="icon"><i class="fa-microphone fa-solid"></i></div>
+                        <div class="body">
+                            <div>Vehicle Horn, Car Horn, Traffic</div>
+                            <div class="foobar">
+                                <div>99% chance</div>
+                                <div class='fahh'></div>
+                                <div>00:00:00</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </main>
+
+        <div class="recorder-button waveform-mode">
+            <div class="cancel"> <i class="fa-solid fa-xmark"></i> </div>
+            <div class="rec">
+                <div class='r1'></div>
+                <div class='r2'> <i class="fa-solid fa-microphone"></i> </div>
+            </div>
+            <div class="save"> <i class="fa-solid fa-check"></i> </div>
+        </div>
+
+        <script src="recorder.js"></script>
+        <script src="reclist.js"></script>
+        <script src="analyser.js"></script>
+        <script src="asthetics.js"></script>
+    </body>
+</html>

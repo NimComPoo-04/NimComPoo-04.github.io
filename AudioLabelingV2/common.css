@@ -1,0 +1,70 @@
+@font-face {
+    font-family: "Playfair Display";
+    src: url("/assets/Playfair_Display/PlayfairDisplay-VariableFont_wght.ttf") format("truetype");
+    font-style: normal; 
+}
+
+@font-face {
+    font-family: "Playfair Display";
+    src: url("/assets/Playfair_Display/PlayfairDisplay-Italic-VariableFont_wght.ttf") format("truetype");
+    font-style: italic; 
+}
+
+:root {
+    --background: #FEFAE0; /* (Cornsilk)      */
+    --surface:    #FFFFFF; /* (White)         */
+    --text:       #283618; /* (Black Forest)  */
+    --text-dim:   #606C38; /* (Olive Leaf)    */
+    --primary:    #BC6C25; /* (Copper)        */
+    --secondary:  #DDA15E; /* (Light Caramel) */
+
+    --font: "Playfair Display", sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: var(--font);
+}
+
+html, body {
+    margin: 0px;
+    padding: 0px;
+
+    user-select: none;
+    touch-action: none;
+
+    background: var(--background);
+}
+
+header {
+    background: var(--text-dim);
+    text-align: center;
+    font-size: 4em;
+    color: var(--background);
+    font-weight: 500;
+    height: 8vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body {
+    display: flex;
+    flex-flow: column;
+    height: 100vh;
+}
+
+main {
+    height: 92vh;
+}
+main > * {
+    height: inherit;
+}
+
+.nodisplay {
+    display: none !important;
+}
+
+canvas {
+    display: block;
+}
