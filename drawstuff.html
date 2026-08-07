@@ -225,6 +225,7 @@ function startGesture(eve) {
 foreground.addEventListener('touchstart', (eve) => {
     if(eve.targetTouches.length == 1)
         startGesture(eve.targetTouches[0])
+    eve.preventDefault()
 })
 
 foreground.addEventListener('mousedown', (eve) => {
@@ -282,12 +283,14 @@ function handleDrag(eve) {
 foreground.addEventListener('touchmove', (eve) => {
     if(eve.targetTouches.length == 1)
         handleDrag(eve.targetTouches[0])
+    eve.preventDefault()
 })
 foreground.addEventListener('mousemove', handleDrag)
 
 foreground.addEventListener('touchend', (eve) => {
     if(eve.targetTouches.length == 1)
         resetForegroundCanvas()
+    eve.preventDefault()
 })
 
 foreground.addEventListener('mouseup', (eve) => {
