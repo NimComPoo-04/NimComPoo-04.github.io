@@ -129,6 +129,7 @@ const state = {
 document.querySelector('#saveCanvas')
 .addEventListener('click', () => {
 
+    resetForegroundCanvas()
     background.toBlob((blob) => {
         const name = document.querySelector('#imgName').value
 
@@ -286,6 +287,10 @@ foreground.addEventListener('touchmove', (eve) => {
 foreground.addEventListener('mousemove', handleDrag)
 
 foreground.addEventListener('touchend', (eve) => {
+    eve.preventDefault()
+    resetForegroundCanvas()
+})
+foreground.addEventListener('touchcancel', (eve) => {
     eve.preventDefault()
     resetForegroundCanvas()
 })
