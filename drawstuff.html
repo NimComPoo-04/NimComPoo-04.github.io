@@ -85,6 +85,8 @@ body {
 
     position: relative;
     overflow: hidden;
+
+    user-select: none;
 }
 
         </style>
@@ -140,7 +142,6 @@ document.querySelector('#saveCanvas')
 
 document.querySelector('#newCanvas')
 .addEventListener('click', () => {
-    console.log('foo')
     const width = document.querySelector('#imgWidth').value
     const height = document.querySelector('#imgHeight').value
     initializeCanvas(width, height)
@@ -161,10 +162,19 @@ function initializeCanvas(width, height) {
     bgfx.fillRect(0, 0, width, height)
 }
 
-const ratio = 640/480
-const height = 600
+if(window.innerWidth > window.innerHeight)
+{
+    const ratio = window.innerWidth / window.innerHeight
+    const height = window.innerHeight * 0.9
+    initializeCanvas(ratio * height, height)
+}
+else
+{
+    const ratio = window.innerHeight / window.innerWidth
+    const width = window.innerWidth * 0.9
+    initializeCanvas(width, ratio * width)
+}
 
-initializeCanvas(ratio * height, height)
 
 let scale = 100
 window.addEventListener('wheel', (eve) => {
@@ -194,16 +204,32 @@ window.addEventListener('wheel', (eve) => {
 
 foreground.addEventListener('contextmenu', (eve) => { eve.preventDefault() })
 
+function getPosition(eve) {
+    const rect = eve.target.getBoundingClientRect()
+    return {
+        x: eve.clientX - rect.x,
+        y: eve.clientY - rect.y
+    }
+}
+
+function startGesture(eve) {
+    console.log(eve)
+    state.gesture = {
+        lastPos: getPosition(eve),
+        path: new Path2D()
+    }
+
+    state.gesture.path.moveTo(state.gesture.lastPos.x, state.gesture.lastPos.y)
+}
+
+foreground.addEventListener('touchstart', (eve) => {
+    startGesture(eve.targetTouches[0])
+})
+
 foreground.addEventListener('mousedown', (eve) => {
     if(eve.buttons == 1)
     {
-        console.log('gesture start')
-        state.gesture = {
-            lastPos: {x: eve.layerX, y: eve.layerY},
-            path: new Path2D()
-        }
-
-        state.gesture.path.moveTo(eve.layerX, eve.layerY)
+        startGesture(eve)
     }
     else if(eve.buttons == 3)
     {
@@ -211,6 +237,7 @@ foreground.addEventListener('mousedown', (eve) => {
         resetForegroundCanvas(true)
     }
 })
+
 
 function hex(a) {
     const first = a & 0xF
@@ -221,7 +248,7 @@ function hex(a) {
     return which[second] + which[first]
 }
 
-foreground.addEventListener('mousemove', (eve) => {
+function handleDrag(eve) {
 
     state.penOpacity = document.querySelector('#penOpacity').value
     state.penColor = document.querySelector('#penColor').value
@@ -229,14 +256,11 @@ foreground.addEventListener('mousemove', (eve) => {
 
     if(state.gesture) {
 
-        console.log('gesture continue')
 
         const prev = state.gesture.lastPos
-        state.gesture.lastPos = {x: eve.layerX, y: eve.layerY}
+        state.gesture.lastPos = getPosition(eve)
 
         foreground.style.opacity = state.penOpacity / 255
-
-        console.log(state)
 
         fgfx.lineCap = "round";
         fgfx.strokeStyle = state.penColor
@@ -244,21 +268,28 @@ foreground.addEventListener('mousemove', (eve) => {
 
         fgfx.beginPath()
         fgfx.moveTo(prev.x, prev.y)
-        fgfx.lineTo(eve.layerX, eve.layerY)
+        fgfx.lineTo(state.gesture.lastPos.x, state.gesture.lastPos.y)
         fgfx.stroke()
 
-        state.gesture.path.lineTo(eve.layerX, eve.layerY)
+        state.gesture.path.lineTo(state.gesture.lastPos.x, state.gesture.lastPos.y)
     }
 
     cursor.style.top = `${eve.clientY - state.penSize/2}px`
     cursor.style.left = `${eve.clientX - state.penSize/2}px`
+}
+
+foreground.addEventListener('touchmove', (eve) => {
+    handleDrag(eve.targetTouches[0])
+})
+foreground.addEventListener('mousemove', handleDrag)
+
+foreground.addEventListener('touchend', (eve) => {
+    resetForegroundCanvas()
 })
 
 foreground.addEventListener('mouseup', (eve) => {
     if(!(eve.buttons & 0b1) && state.gesture)
     {
-        console.log(state.gesture)
-
         resetForegroundCanvas()
     }
 })
@@ -266,7 +297,6 @@ foreground.addEventListener('mouseup', (eve) => {
 const cursor = document.querySelector('#followCursor')
 
 foreground.addEventListener('mouseenter', (eve) => {
-    console.log(cursor)
     cursor.style.display = 'block'
     cursor.style.width = `${Number(document.querySelector('#penSize').value)}px`
 })
