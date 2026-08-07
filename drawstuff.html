@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
     <head>
+        <meta name=viewport value="width=device-width, initial-scale=1">
         <title>Draw Stuff</title>
         <style>
 
@@ -213,7 +214,6 @@ function getPosition(eve) {
 }
 
 function startGesture(eve) {
-    console.log(eve)
     state.gesture = {
         lastPos: getPosition(eve),
         path: new Path2D()
@@ -223,7 +223,8 @@ function startGesture(eve) {
 }
 
 foreground.addEventListener('touchstart', (eve) => {
-    startGesture(eve.targetTouches[0])
+    if(eve.targetTouches.length == 1)
+        startGesture(eve.targetTouches[0])
 })
 
 foreground.addEventListener('mousedown', (eve) => {
@@ -279,12 +280,14 @@ function handleDrag(eve) {
 }
 
 foreground.addEventListener('touchmove', (eve) => {
-    handleDrag(eve.targetTouches[0])
+    if(eve.targetTouches.length == 1)
+        handleDrag(eve.targetTouches[0])
 })
 foreground.addEventListener('mousemove', handleDrag)
 
 foreground.addEventListener('touchend', (eve) => {
-    resetForegroundCanvas()
+    if(eve.targetTouches.length == 1)
+        resetForegroundCanvas()
 })
 
 foreground.addEventListener('mouseup', (eve) => {
