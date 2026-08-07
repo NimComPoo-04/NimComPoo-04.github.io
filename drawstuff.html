@@ -1,0 +1,301 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Draw Stuff</title>
+        <style>
+
+#ontopof {
+    position: relative;
+    transition: transform 0.4s ease;
+}
+
+#foreground, #background {
+    display: block;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+#controls {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+
+    background: rgba(218, 218, 218, 0.5);
+    backdrop-filter: blur(3px);
+
+    font-family: monospace;
+    font-size: 1.2em;
+    padding-inline: 10px;
+    padding-block: 5px;
+    padding-bottom: 10px;
+
+    .hdr {
+        font-size: 1.2em;
+        font-weight: bold;
+        text-align: center;
+        padding-bottom: 10px;
+    }
+
+    input {
+        vertical-align: middle;
+    }
+
+    button {
+        vertical-align: middle;
+        font-family: monospace;
+        padding-inline: 10px;
+    }
+
+    .controlstructure {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+#followCursor {
+    aspect-ratio: 1/1;
+    width: 20px;
+    position: absolute;
+    border-radius: 50%;
+    border: 3px dotted white;
+    mix-blend-mode: difference;
+
+    box-sizing: border-box;
+    display: none;
+
+    top:0px;
+    left:0px;
+    z-index: 100;
+
+    user-select: none;
+    pointer-events: none;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: gray;
+
+    position: relative;
+    overflow: hidden;
+}
+
+        </style>
+    </head>
+    <body>
+        <div id=followCursor></div>
+        <div id=ontopof>
+            <canvas id="background"></canvas>
+            <canvas id="foreground"></canvas>
+        </div>
+
+        <div id=controls>
+            <div class=hdr>Controls</div>
+            <div class=controlstructure>
+                <label>Pen Size &nbsp;: <input id=penSize type=range value=1 min=1 max=50></label>
+                <label>Pen Color : <input id=penColor type=color></label>
+                <label>Opacity &nbsp; : <input id=penOpacity type=range value=255 min=1 max=255></label>
+                <label>Save Image: <input id=imgName type=text value='test.png'> <button id=saveCanvas>Save</button></label>
+                <label>New Image : <input id=imgWidth type=number value=640 size=5> x <input id=imgHeight type=number value=480 size=5> <button id=newCanvas>New</button></label>
+            </div>
+        </div>
+        <a id='downloader' download></a>
+<script>
+
+const container = document.querySelector('#ontopof')
+
+const foreground = document.querySelector('#foreground')
+const background = document.querySelector('#background')
+
+const fgfx = foreground.getContext('2d')
+const bgfx = background.getContext('2d')
+
+const state = {
+    gesture: null,
+    penColor: '#000000',
+    penSize: 1
+}
+
+document.querySelector('#saveCanvas')
+.addEventListener('click', () => {
+
+    background.toBlob((blob) => {
+        const name = document.querySelector('#imgName').value
+
+        const url = URL.createObjectURL(blob)
+        const savr = document.querySelector('#downloader')
+        savr.download = name
+        savr.href = url
+        savr.click()
+        URL.revokeObjectURL(url)
+    }, 'image/png')
+})
+
+document.querySelector('#newCanvas')
+.addEventListener('click', () => {
+    console.log('foo')
+    const width = document.querySelector('#imgWidth').value
+    const height = document.querySelector('#imgHeight').value
+    initializeCanvas(width, height)
+})
+
+function initializeCanvas(width, height) {
+
+    ontopof.style.width = `${width}px`
+    ontopof.style.height = `${height}px`
+
+    foreground.width = width
+    foreground.height = height
+
+    background.width = width
+    background.height = height
+
+    bgfx.fillStyle = 'white'
+    bgfx.fillRect(0, 0, width, height)
+}
+
+const ratio = 640/480
+const height = 600
+
+initializeCanvas(ratio * height, height)
+
+let scale = 100
+window.addEventListener('wheel', (eve) => {
+    /*
+    if(eve.deltaY < 0)
+        scale += 10
+    else
+        scale -= 10
+
+    scale = Math.min(Math.max(scale, 30), 300)
+
+    container.style.transform = `scale(${scale}%)`
+    */
+    const foo = document.querySelector('#penSize')
+    let delta = 5
+
+    if(eve.deltaY > 0)
+        delta *= -1
+
+    foo.value = Math.min(Math.max(Number(foo.value) + delta, 1), 100)
+
+    state.penSize = Number(foo.value)
+    cursor.style.width = `${state.penSize}px`
+    cursor.style.top = `${eve.clientY - state.penSize/2}px`
+    cursor.style.left = `${eve.clientX - state.penSize/2}px`
+})
+
+foreground.addEventListener('contextmenu', (eve) => { eve.preventDefault() })
+
+foreground.addEventListener('mousedown', (eve) => {
+    if(eve.buttons == 1)
+    {
+        console.log('gesture start')
+        state.gesture = {
+            lastPos: {x: eve.layerX, y: eve.layerY},
+            path: new Path2D()
+        }
+
+        state.gesture.path.moveTo(eve.layerX, eve.layerY)
+    }
+    else if(eve.buttons == 3)
+    {
+        // we must cancel the gesture
+        resetForegroundCanvas(true)
+    }
+})
+
+function hex(a) {
+    const first = a & 0xF
+    const second = (a & 0xF0) >> 4
+
+    const which = '0123456789abcdef'
+
+    return which[second] + which[first]
+}
+
+foreground.addEventListener('mousemove', (eve) => {
+
+    state.penOpacity = document.querySelector('#penOpacity').value
+    state.penColor = document.querySelector('#penColor').value
+    state.penSize = Number(document.querySelector('#penSize').value)
+
+    if(state.gesture) {
+
+        console.log('gesture continue')
+
+        const prev = state.gesture.lastPos
+        state.gesture.lastPos = {x: eve.layerX, y: eve.layerY}
+
+        foreground.style.opacity = state.penOpacity / 255
+
+        console.log(state)
+
+        fgfx.lineCap = "round";
+        fgfx.strokeStyle = state.penColor
+        fgfx.lineWidth = state.penSize
+
+        fgfx.beginPath()
+        fgfx.moveTo(prev.x, prev.y)
+        fgfx.lineTo(eve.layerX, eve.layerY)
+        fgfx.stroke()
+
+        state.gesture.path.lineTo(eve.layerX, eve.layerY)
+    }
+
+    cursor.style.top = `${eve.clientY - state.penSize/2}px`
+    cursor.style.left = `${eve.clientX - state.penSize/2}px`
+})
+
+foreground.addEventListener('mouseup', (eve) => {
+    if(!(eve.buttons & 0b1) && state.gesture)
+    {
+        console.log(state.gesture)
+
+        resetForegroundCanvas()
+    }
+})
+
+const cursor = document.querySelector('#followCursor')
+
+foreground.addEventListener('mouseenter', (eve) => {
+    console.log(cursor)
+    cursor.style.display = 'block'
+    cursor.style.width = `${Number(document.querySelector('#penSize').value)}px`
+})
+
+foreground.addEventListener('mouseleave', (eve) => {
+    resetForegroundCanvas()
+    cursor.style.display = 'none'
+})
+
+function resetForegroundCanvas(withoutCommit)
+{
+    if(state.gesture && state.gesture.path)
+    {
+        if(!withoutCommit)
+        {
+            bgfx.lineCap = "round";
+            bgfx.lineJoin = "round";
+            bgfx.strokeStyle = state.penColor + hex(state.penOpacity)
+            bgfx.lineWidth = state.penSize
+
+            bgfx.stroke(state.gesture.path)
+        }
+
+        fgfx.clearRect(0, 0, foreground.width, foreground.height)
+
+        state.gesture = null
+    }
+}
+
+        </script>
+    </body>
+</html>
