@@ -1,0 +1,391 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Pong Burger</title>
+        <style>
+canvas {
+    display: block;
+}
+        </style>
+    </head>
+    <body>
+        <h1>Pong</h1>
+        <canvas></canvas>
+        <h2>Modified game of pong</h2>
+        <ul>
+            <li>Use <b>UP DOWN ARROW KEYS</b> for Player on right </li>
+            <li>Use <b>W A S D</b> for Player on left</li>
+            <li>If not like ball speed and direction just refresh</li>
+        </ul>
+        Fair warning the paddles rotate, and hitting the yellow gets you points.
+        Points depends on how long the ball is hitting the yellow. good luck.
+        <script>
+
+const PadleWidth = 20
+
+const canvas = document.querySelector('canvas')
+const gfx = canvas.getContext('2d')
+
+canvas.width = 800
+canvas.height = 480
+
+function Line(x0, y0, x1, y1, shouldDie, foci) {
+    
+    // Functional Lines
+    this.x0 = x0
+    this.y0 = y0
+    this.x1 = x1
+    this.y1 = y1
+    this.shouldDie = shouldDie || false
+    this.foci = foci || {x: (x1 + x0) / 2, y: (y1 + y0) / 2}
+
+    this.draw = function(woowoo, color) {
+        gfx.beginPath()
+        if(woowoo)
+            gfx.lineWidth = woowoo
+        gfx.strokeStyle = color || 'white'
+        gfx.moveTo(this.x0, this.y0)
+        gfx.lineTo(this.x1, this.y1)
+        gfx.stroke()
+    }
+
+    this.checkCollision = function(ball) {
+
+        const Ax = ball.x - this.x0
+        const Ay = ball.y - this.y0
+
+        const Bx = this.x1 - this.x0
+        const By = this.y1 - this.y0
+
+        const lineLength = Math.sqrt(Bx * Bx + By * By)
+        const closestPerpendicularPoint = (Bx * Ax + By * Ay) / lineLength
+
+        // Closest Perpendicular point to the line.
+        const delta = closestPerpendicularPoint / lineLength
+        const Px = this.x0 + Bx * delta
+        const Py = this.y0 + By * delta
+
+        const distance = Math.hypot(Px - ball.x, Py - ball.y)
+        if(distance < ball.r)
+        {
+            const minX = Math.min(this.x0, this.x1)
+            const maxX = Math.max(this.x0, this.x1)
+            const minY = Math.min(this.y0, this.y1)
+            const maxY = Math.max(this.y0, this.y1)
+
+            // We know its on the line for sure, so comparing X we know if its in range,
+            // we will be on that lineSegment
+            if(Px >= minX && Px <= maxX && Py >= minY && Py <= maxY)
+            {
+                return {x: Px, y: Py, nx: (ball.x - Px) / distance, ny: (ball.y - Py) / distance, canResolve: !this.shouldDie}
+            }
+            else
+            {
+                // Ok so just check if p0 or p1 inside the circle
+
+                if(Math.hypot(this.x0 - ball.x, this.y0 - ball.y) < ball.r)
+                {
+                    const Cx = (ball.x - this.x0)
+                    const Cy = (ball.y - this.y0)
+
+                    const len = Math.hypot(Cx, Cy)
+
+                    return {x: this.x0, y: this.y0, nx: Cx/len, ny: Cy/len, canResolve: !this.shouldDie}
+                }
+
+                if(Math.hypot(this.x1 - ball.x, this.y1 - ball.y) < ball.r)
+                {
+                    const Cx = (ball.x - this.x1)
+                    const Cy = (ball.y - this.y1)
+
+                    const len = Math.hypot(Cx, Cy)
+
+                    return {x: this.x1, y: this.y1, nx: Cx/len, ny: Cy/len, canResolve: !this.shouldDie}
+                }
+
+                return false
+            }
+        }
+        else
+            return false
+    }
+}
+
+function Ball(x, y, r) {
+    this.x = x
+    this.y = y
+    this.r = r
+
+    //@bullshit
+    const vel = 500
+    this.vx = Math.random() * vel
+    this.vy = Math.random() * vel
+
+    this.resolveCollision = function(hit) {
+        if(!hit) return true
+
+        if(!hit.canResolve)
+            return false
+
+        const dx = hit.x - this.x
+        const dy = hit.y - this.y
+
+        const length = Math.hypot(dx, dy)
+
+        this.x -= (this.r - length + 0.10) * dx / length;
+        this.y -= (this.r - length + 0.10) * dy / length;
+
+        return true
+    } 
+
+    this.reflectVector = function(hit, randomize) {
+        if(!hit) return
+
+        const {nx, ny} = hit
+        const len = (nx * this.vx + ny * this.vy)
+
+        this.vx -= 2 * len * nx
+        this.vy -= 2 * len * ny
+
+        //if (randomize)
+        {
+            const angle = (Math.random() - 0.5) * Math.PI
+
+            this.vx += Math.cos(angle);
+            this.vy += Math.sin(angle);
+        }
+    }
+
+    this.draw = function() {
+        gfx.beginPath() 
+        gfx.fillStyle = 'red'
+        gfx.ellipse(this.x, this.y, this.r, this.r, 0, 0, Math.PI * 2)
+        gfx.fill() 
+    }
+
+    this.update = function(dt) {
+        this.x += this.vx * dt
+        this.y += this.vy * dt
+    }
+}
+
+function Padle(x, y, w, h) {
+    this.x = x
+    this.y = y
+    this.w = w
+    this.h = h
+    this.ang = Math.PI/2
+    this.dang = 0
+    this.vel = 0
+    this.score = 0
+
+    this.move = function(dir) {
+        if(dir == 'up')
+            this.vel = -5*h
+        else if(dir == 'down')
+            this.vel = 5*h
+        else
+            this.vel = 0
+    }
+
+    this.rotate = function(angle) {
+        this.dang = angle
+    }
+
+    this.update = function(dt) {
+        this.y += this.vel * dt
+        this.ang += this.dang * dt
+
+        if(this.y < this.h/2)
+            this.y = this.h/2
+        else if(this.y > canvas.height - this.h/2)
+            this.y = canvas.height - this.h/2
+    }
+
+    this.draw = function() {
+
+        const x0 = this.x + Math.cos(this.ang) * this.h/2
+        const y0 = this.y - Math.sin(this.ang) * this.h/2
+
+        const x1 = this.x - Math.cos(this.ang) * this.h/2 
+        const y1 = this.y + Math.sin(this.ang) * this.h/2
+
+        gfx.beginPath()
+        gfx.strokeStyle = 'white'
+        gfx.lineWidth = PadleWidth/2
+        gfx.moveTo(x0, y0)
+        gfx.lineTo(x1, y1)
+        gfx.stroke()
+    }
+
+    this.checkCollision = function(ball) {
+        const x0 = this.x + Math.cos(this.ang) * this.h/2
+        const y0 = this.y - Math.sin(this.ang) * this.h/2
+
+        const x1 = this.x - Math.cos(this.ang) * this.h/2 
+        const y1 = this.y + Math.sin(this.ang) * this.h/2
+
+        const line = new Line(x0, y0, x1, y1)
+        const hit = line.checkCollision(ball)
+        if(hit)
+            return hit
+        return false
+    }
+}
+
+const w = canvas.width
+const h = canvas.height
+const ball        = new Ball(w / 2, h / 2, 15)
+const top_line    = new Line(0, 0, w, 0)
+const bottom_line = new Line(0, h, w, h)
+const left_line   = new Line(0, 0, 0, h)
+const right_line  = new Line(w, 0, w, h)
+
+const left_goal = new Line(3, h/2 - 120, 3, h/2 + 120, true)
+const right_goal = new Line(w-3, h/2 - 120, w-3, h/2 + 120, true)
+
+const leftPadle = new Padle(w * 0.20, h/2, 30, 100)
+const rightPadle = new Padle(w * 0.80, h/2, 30, 100)
+
+const lines = [
+    top_line   ,
+    bottom_line,
+    left_line  ,
+    right_line ,
+    leftPadle  ,
+    rightPadle 
+]
+
+function drawScore(score, p, q) {
+    gfx.font = '48px serif'
+    const h = 48
+    const w = gfx.measureText(score).width
+    gfx.fillStyle = 'white'
+    gfx.fillText(score, canvas.width * p - w/2, canvas.height * q + h/2)
+}
+
+function draw() {
+    gfx.fillStyle = 'black'
+    gfx.fillRect(0, 0, canvas.width, canvas.height)
+
+    const barwidth = 10
+    gfx.fillStyle = 'white'
+    gfx.fillRect(canvas.width/2 - barwidth/2, 0, barwidth, canvas.height)
+
+    drawScore(leftPadle.score, 0.25, 0.1)
+    drawScore(rightPadle.score, 0.75, 0.1)
+
+    left_goal.draw(10, 'yellow')
+    right_goal.draw(10, 'yellow')
+
+    leftPadle.draw()
+    rightPadle.draw()
+    ball.draw()
+}
+
+let oldtime = 0;
+function update(time) {
+    const dt = Math.min((time - oldtime)/ 1000, 1/60)
+    oldtime = time
+
+    leftPadle.update(dt)
+    rightPadle.update(dt)
+
+    if(left_goal.checkCollision(ball))
+        rightPadle.score += 1
+    if(right_goal.checkCollision(ball))
+        leftPadle.score += 1
+
+    const step = 16
+    for(let k = 0; k < step; k++)
+    {
+        ball.update(dt / step)
+
+        for(const line of lines)
+        {
+            const hit = line.checkCollision(ball)
+
+            if(!ball.resolveCollision(hit))
+            {
+                if(line == left_line)
+                    rightPadle.score += 1
+
+                else if(line == right_line)
+                    leftPadle.score += 1
+            }
+
+            ball.reflectVector(hit)
+        }
+    }
+
+    draw()
+
+    requestAnimationFrame(update)
+}
+requestAnimationFrame(update)
+
+window.addEventListener('keydown', (eve) => {
+
+    switch(eve.key)
+    {
+        case 'ArrowUp':
+            rightPadle.move('up')
+            break
+        case 'ArrowDown':
+            rightPadle.move('down')
+            break
+        case 'ArrowLeft':
+            rightPadle.rotate(Math.PI)
+            break
+        case 'ArrowRight':
+            rightPadle.rotate(-Math.PI)
+            break
+        case 'w':
+        case 'W':
+            leftPadle.move('up')
+            break
+        case 's':
+        case 'S':
+            leftPadle.move('down')
+            break
+        case 'A':
+        case 'a':
+            leftPadle.rotate(-Math.PI)
+            break
+        case 'D':
+        case 'd':
+            leftPadle.rotate(Math.PI)
+            break
+    }
+})
+
+window.addEventListener('keyup', (eve) => {
+    switch(eve.key)
+    {
+        case 'w':
+        case 'W':
+        case 's':
+        case 'S':
+            leftPadle.move('stop')
+            break
+        case 'ArrowUp':
+        case 'ArrowDown':
+            rightPadle.move('stop')
+            break
+
+        case 'A':
+        case 'a':
+        case 'D':
+        case 'd':
+            leftPadle.rotate(0)
+            break
+        case 'ArrowLeft':
+        case 'ArrowRight':
+            rightPadle.rotate(0)
+            break
+    }
+})
+
+        </script>
+    </body>
+</html>
