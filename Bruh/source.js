@@ -11,6 +11,16 @@ const SoundEffects = {
     faliure: new Audio('failure.ogg')
 }
 
+const ImageAssets = {
+    semcarrier: document.querySelector('#semcarrier'),
+    pooper: document.querySelector('#pooper'),
+
+    normal: document.querySelector('#normal'),
+    gravitron: document.querySelector('#gravitron'),
+    trajectron: document.querySelector('#trajectron'),
+    bacteratron: document.querySelector('#backteratron'),
+}
+
 function resize() {
     canv.width = window.innerWidth
     canv.height = window.innerHeight

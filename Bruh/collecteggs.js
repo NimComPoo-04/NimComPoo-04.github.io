@@ -362,45 +362,56 @@ function CollectEggsUpdate(dt) {
     }
 
     // Pooper
+    /*
     gfx.fillStyle = 'purple'
     gfx.fillRect(DropperDude.x, DropperDude.y, DropperDude.w, DropperDude.h)
+    */
+    gfx.save()
+    gfx.translate(DropperDude.x + DropperDude.w/2, DropperDude.y + DropperDude.h/2)
+    gfx.scale(DropperDude.vx > 0 ? 1 : -1, 1)
+    gfx.drawImage(ImageAssets.pooper, -DropperDude.w/2, -DropperDude.h/2, DropperDude.w, DropperDude.h)
+    gfx.restore()
 
     for(const k of DroppingEggs)
     {
+        let image = ImageAssets.normal
         switch(k.kind)
         {
             case 'normal':
-                gfx.fillStyle = 'burlywood'
+                image = ImageAssets.normal
                 break
             case 'gravitron':
-                gfx.fillStyle = 'yellowgreen'
+                image = ImageAssets.gravitron
                 break
             case 'trajectron':
-                gfx.fillStyle = 'goldenrod'
+                image = ImageAssets.trajectron
                 break
             case 'bacteratron':
-                gfx.fillStyle = 'violet'
+                image = ImageAssets.bacteratron
                 break
         }
-        gfx.fillRect(k.x - k.w/2, k.y - k.h/2, k.w, k.h)
+        //gfx.fillRect(k.x - k.w/2, k.y - k.h/2, k.w, k.h)
+        gfx.drawImage(image, k.x - k.w/2 - k.w * 0.2, k.y - k.h/2 - k.w * 0.2, k.w * 1.4, k.h * 1.4)
     }
 
     gfx.fillStyle = 'goldenrod'
-    gfx.fillRect(CollectorDude.x, CollectorDude.y, CollectorDude.w, CollectorDude.h)
+    //gfx.fillRect(CollectorDude.x, CollectorDude.y, CollectorDude.w, CollectorDude.h)
+
+    gfx.drawImage(ImageAssets.semcarrier,
+        CollectorDude.x - CollectorDude.w * 0.2, CollectorDude.y - CollectorDude.h * 0.2,
+        CollectorDude.w * 1.4, CollectorDude.h * 1.4)
 
     if(CollectorDude.boost)
     {
-        gfx.fillStyle = 'lime'
-        gfx.fillRect(CollectorDude.x, CollectorDude.y + CollectorDude.h * 0.9, CollectorDude.w, CollectorDude.h * 0.1)
+        gfx.strokeStyle = 'lime'
+        gfx.strokeRect(CollectorDude.x - CollectorDude.w * 0.2, CollectorDude.y - CollectorDude.h * 0.2, CollectorDude.w * 1.4, CollectorDude.h * 1.4)
     }
     if(CollectorDude.magnetism)
     {
-        gfx.strokeStyle = 'darkred'
+        gfx.strokeStyle = 'red'
         gfx.lineWidth = 5
 
-        const dx = CollectorDude.w * 0.1
-        const dy = CollectorDude.h * 0.1 
-        gfx.strokeRect(CollectorDude.x - dx, CollectorDude.y - dy, CollectorDude.w + dx * 2, CollectorDude.h + dy * 2)
+        gfx.strokeRect(CollectorDude.x - CollectorDude.w * 0.2, CollectorDude.y - CollectorDude.h * 0.2, CollectorDude.w * 1.4, CollectorDude.h * 1.4)
     }
 }
 
