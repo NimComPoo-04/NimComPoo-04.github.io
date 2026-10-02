@@ -272,9 +272,14 @@ function UpdateEggs(dt)
                 const k = Math.random()
                 DropperDude.poopEgg(a, DroppingEggs[i].x, DroppingEggs[i].y, k * canv.width * 0.8 + canv.width * 0.1, 2)
                 DropperDude.poopEgg(b, DroppingEggs[i].x, DroppingEggs[i].y, (0.5 + k)%1 * canv.width * 0.8 + canv.width * 0.1, 2)
+
+                SoundEffects.explode.play()
             }
             DroppingEggs.splice(i, 1)
             DroppedEggsCount += 1;
+
+            if(DroppedEggsCount % 10 == 0 && DroppedEggsCount != 0)
+                SoundEffects.faliure.play()
         }
         else if(CollectorDude.collision(DroppingEggs[i]))
         {
@@ -282,15 +287,22 @@ function UpdateEggs(dt)
             {
                 CollectorDude.magnetism = true
                 CollectorDude.magnetism_time = 8
+
+                SoundEffects.magnet.play()
             }
             else if(DroppingEggs[i].kind == 'gravitron')
             {
                 CollectorDude.boost = true
                 CollectorDude.boost_time = 8
+
+                SoundEffects.boost.play()
             }
 
             DroppingEggs.splice(i, 1)
             CollectedEggsCount += 1;
+
+            if(CollectedEggsCount % 10 == 0 || CollectedEggsCount == 1)
+                SoundEffects.every10th.play()
         }
         else
             DroppingEggs[i].update(dt)

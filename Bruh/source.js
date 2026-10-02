@@ -1,6 +1,16 @@
 const canv = document.querySelector('#canv')
 const gfx = canv.getContext('2d')
 
+const SoundEffects = {
+    boost: new Audio('boost.ogg'),
+    ending: new Audio('ending.ogg'),
+    every10th: new Audio('every10th.ogg'),
+    explode: new Audio('explode.ogg'),
+    gamestart: new Audio('gamestart.ogg'),
+    magnet: new Audio('magnet.ogg'),
+    faliure: new Audio('failure.ogg')
+}
+
 function resize() {
     canv.width = window.innerWidth
     canv.height = window.innerHeight
@@ -24,11 +34,13 @@ function stateChanger() {
     switch(CurrentGameState)
     {
         case 'MAIN_MENU':
+            SoundEffects.gamestart.play()
             CurrentGameState = 'COLLECT_EGGS'
             //CurrentGameState = 'ENDING'
             break
 
         case 'COLLECT_EGGS':
+            SoundEffects.ending.play()
             CurrentGameState = 'ENDING'
             break
     }
