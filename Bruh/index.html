@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+    <head>
+        <style>
+body {
+    margin: 0px;
+    display: grid;
+    grid-template: "container";
+    overflow: hidden;
+
+    touch-action: none;
+    user-select: none;
+}
+canvas {
+    grid-area: container;
+    display: block;
+}
+
+.ui {
+    grid-area: container;
+    display: block;
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.select {
+    display: block;
+}
+
+.ui div:not(.select) {
+    display: none;
+}
+
+.ui .collect-eggs {
+    width: 70%;
+    text-align: center;
+    align-content: center;
+    margin: auto;
+
+    padding: 2em;
+    border-radius: 2em;
+    border: 0.1em solid black;
+
+    background: skyblue;
+    
+    header {
+        color: midnightblue;
+        font-size: 8em;
+    }
+    main {
+        color: black;
+        font-size: 3em;
+        margin-bottom: 3vh;
+    }
+    button {
+        font-size: 3em;
+        margin: 0px;
+        padding: 0.5em;
+        background: indigo;
+        border-radius: 3em;
+        color: skyblue;
+        font-weight: 800;
+        border: 0px solid white;
+    }
+    button:active {
+        background: violet;
+        color: blue;
+    }
+}
+
+.ui .main-menu, .ui .ending {
+    width: 100%;
+    text-align: center;
+    align-content: center;
+    header {
+        color: gold;
+        font-size: 8em;
+    }
+    main {
+        color: lightgray;
+        font-size: 3em;
+        margin-bottom: 5vh;
+    }
+    button {
+        font-size: 3em;
+        margin: 0px;
+        padding: 0.5em;
+        background: pink;
+        border-radius: 3em;
+        color: darkred;
+        font-weight: 800;
+        border: 0px solid white;
+
+        animation-name: mainBtns;
+        animation-duration: 3s;
+        animation-direction: alternate;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease-in-out;
+
+        transform: translateX(0%);
+    }
+
+    button:active {
+        background: gold;
+        color: red;
+    }
+}
+
+@keyframes mainBtns {
+    0% {
+        transform: translateX(-100%) rotate(-3deg);
+    }
+    50% {
+        transform: translateX(0%) rotate(0deg);
+    }
+    100% {
+        transform: translateX(100%) rotate(3deg);
+    }
+}
+
+        </style>
+    </head>
+    <body>
+        <canvas id=canv></canvas>
+
+        <div class=ui>
+            <div class='main-menu select'>
+                <header>Happy birthday!</header>
+                <main>Lets make a cake shall we!</main>
+                <button onclick="stateChanger()">Continue xD</button>
+            </div>
+            <div class='collect-eggs'>
+                <header>TODO:</header>
+                <main>
+                    We have very promptly ran out of eggs,
+                    please collect some eggs for the greater good,
+                    and also the cake.<br><br>
+
+                    Click / Touch where u want to go and boom done
+                </main>
+                <button onclick="collectEggsStart()">Continue xD</button>
+            </div>
+            <div class='ending'>
+                <header>Yay!</header>
+                <main>
+                    Now we have what you call an effective good birthday<br><br>
+                    Total Eggs you Collected: <span id=collected></span><br><br>
+                    Total Eggs you Dropped on the floor smh: <span id=dropped></span>
+                </main>
+                <img src=cake.png>
+            </div>
+        </div>
+
+        <script src=source.js></script>
+        <script src=collecteggs.js></script>
+        <script src=mainmenu.js></script>
+    </body>
+</html>
+
